@@ -5,6 +5,19 @@ import com.duyts.android.composepractice.model.Story
 import com.duyts.android.composepractice.model.User
 
 object MockData {
+	val images = listOf(
+		"https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+		"https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+		"https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef",
+		"https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6",
+		"https://images.unsplash.com/photo-1472214103451-9374bd1c798e",
+		"https://images.unsplash.com/photo-1469474968028-56623f02e42e",
+		"https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+		"https://images.unsplash.com/photo-1541167760496-1628856ab772",
+		"https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb",
+		"https://images.unsplash.com/photo-1509042239860-f550ce710b93"
+	)
+
 	private fun getMockUsers(): List<User> {
 		return listOf(
 			User(
@@ -59,6 +72,7 @@ object MockData {
 			)
 		)
 	}
+
 	fun getMockStories(): List<Story> {
 		val users: List<User> = getMockUsers()
 		return users.map { user ->
@@ -68,20 +82,10 @@ object MockData {
 			)
 		}
 	}
+
 	fun getMockPosts(): List<Post> {
 		val users = getMockUsers()
-		val images = listOf(
-			"https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-			"https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-			"https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef",
-			"https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6",
-			"https://images.unsplash.com/photo-1472214103451-9374bd1c798e",
-			"https://images.unsplash.com/photo-1469474968028-56623f02e42e",
-			"https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-			"https://images.unsplash.com/photo-1541167760496-1628856ab772",
-			"https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb",
-			"https://images.unsplash.com/photo-1509042239860-f550ce710b93"
-		)
+
 
 		return List(20) { index ->
 			val user = users[index % users.size] // Rotate through users
@@ -93,7 +97,7 @@ object MockData {
 				images = images.shuffled().take((3..6).random()), // Random 3-6 images
 				likeCount = (100..3000).random(),
 				commentCount = (10..500).random(),
-				likedByUsers = users.shuffled().take((2..5).random()).map { it.name } // Random 2-5 users
+				likedByUsers = users.shuffled().take((1..users.size).random())
 			)
 		}
 	}

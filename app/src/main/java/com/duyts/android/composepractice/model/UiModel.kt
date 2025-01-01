@@ -13,7 +13,7 @@ data class Post(
 	val images: List<String>, // List of image URLs
 	val likeCount: Int,
 	val commentCount: Int,
-	val likedByUsers: List<String>, // Names of users who liked
+	val likedByUsers: List<User>, // Names of users who liked
 )
 
 data class User(
