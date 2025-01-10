@@ -5,16 +5,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.safeGestures
+import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -28,7 +40,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,25 +64,25 @@ import com.duyts.android.composepractice.data.MockData
 import com.duyts.android.composepractice.model.Post
 import com.duyts.android.composepractice.model.Story
 import com.duyts.android.composepractice.model.User
-import okhttp3.internal.userAgent
 
 
 @Composable
 fun HomeScreen() {
-	val posts = MockData.getMockPosts()
+	val posts = MockData.getMockPosts(6)
 	val stories = MockData.getMockStories()
 	HomeContent(posts, stories)
 }
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeContent(posts: List<Post>, stories: List<Story>) {
 	LazyColumn(
 		modifier = Modifier
 			.fillMaxSize()
-			.background(MaterialTheme.colorScheme.background),
-		contentPadding = PaddingValues(18.dp),
-		verticalArrangement = Arrangement.spacedBy(24.dp)
+			.imePadding(),
+		verticalArrangement = Arrangement.spacedBy(24.dp),
+		contentPadding = WindowInsets.systemBars.asPaddingValues()
 	) {
 		item {
 			Header()
@@ -91,7 +109,10 @@ private fun Stories(stories: List<Story>) {
 			) {
 				Surface(
 					shape = CircleShape,
-					border = BorderStroke(1.dp, Color.Black)
+					border = BorderStroke(
+						1.dp,
+						MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+					)
 				) {
 					AsyncImage(
 						modifier = Modifier.size(72.dp),
@@ -114,9 +135,14 @@ private fun Stories(stories: List<Story>) {
 
 @Composable
 private fun Header() {
-	Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-		Image(imageVector = Icons.Filled.Home, contentDescription = null)
-		Spacer(modifier = Modifier.weight(1f))
+	var input by remember { mutableStateOf("") }
+	Row(modifier = Modifier.fillMaxWidth()) {
+		TextField(
+			input, onValueChange = { input = it },
+			modifier = Modifier
+				.weight(1f)
+				.padding(end = 6.dp)
+		)
 		Image(imageVector = Icons.Filled.MoreVert, contentDescription = null)
 		Image(imageVector = Icons.Filled.Email, contentDescription = null)
 	}
@@ -125,11 +151,11 @@ private fun Header() {
 @Composable
 fun PostItem(item: Post) {
 	val user = item.user
+	var input by remember { mutableStateOf("") }
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
 			.background(Color.Transparent)
-			.padding(bottom = 6.dp)
 	) {
 		Row(
 			modifier = Modifier.fillMaxWidth(),
@@ -165,7 +191,7 @@ fun PostItem(item: Post) {
 		}
 
 		Text(
-			modifier = Modifier.padding(vertical = 8.dp),
+			modifier = Modifier.safeDrawingPadding(),
 			text = item.contentText,
 			style = MaterialTheme.typography.bodyLarge
 		)
@@ -173,7 +199,16 @@ fun PostItem(item: Post) {
 		PostImagesGrid(item.images)
 		Spacer(modifier = Modifier.size(6.dp))
 		LikeUsers(item.likedByUsers)
+		TextField(
+			input, onValueChange = { input = it },
+			modifier = Modifier
+				.weight(1f)
+				.padding(end = 6.dp)
+		)
 	}
+	Spacer(
+		modifier = Modifier.windowInsetsBottomHeight(WindowInsets.systemBars)
+	)
 }
 
 @Composable
@@ -216,7 +251,10 @@ private fun LikeUserAvatars(
 	}
 }
 
-@Preview
+@Preview(
+	showSystemUi = true,
+	showBackground = true
+)
 @Composable
 fun HomeContentPreview() {
 	val stories = MockData.getMockStories()

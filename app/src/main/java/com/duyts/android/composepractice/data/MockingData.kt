@@ -83,11 +83,11 @@ object MockData {
 		}
 	}
 
-	fun getMockPosts(): List<Post> {
+	fun getMockPosts(size:Int = 20): List<Post> {
 		val users = getMockUsers()
 
 
-		return List(20) { index ->
+		return List(size) { index ->
 			val user = users[index % users.size] // Rotate through users
 			Post(
 				id = (index + 1).toString(),
